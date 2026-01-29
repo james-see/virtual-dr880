@@ -119,12 +119,15 @@ function createPadAssignment(instrumentId: string): PadAssignment {
 }
 
 // Default bass tone
-const defaultBassTone: BassTone = {
-  id: 'finger_bass',
-  name: 'Finger Bass',
-  sampleUrl: '/samples/bass/finger_bass.mp3',
-  voices: 1,
-};
+// Get default bass tone with correct base URL
+function getDefaultBassTone(): BassTone {
+  return {
+    id: 'finger_bass',
+    name: 'Finger Bass',
+    sampleUrl: `${BASE_URL}samples/bass/finger_bass.mp3`,
+    voices: 1,
+  };
+}
 
 // Create default kit
 export function getDefaultKit(): Kit {
@@ -163,7 +166,7 @@ export function getDefaultKit(): Kit {
     name: 'Studio 1',
     isPreset: true,
     pads,
-    bassTone: defaultBassTone,
+    bassTone: getDefaultBassTone(),
     drumLevel: 80,
     bassLevel: 80,
   };
@@ -189,6 +192,9 @@ export function getPadLabels(
       return DRUM1_INSTRUMENTS.map(inst => ({ name: inst.name }));
   }
 }
+
+// Base URL for samples (handles GitHub Pages subpath)
+const BASE_URL = import.meta.env.BASE_URL || '/';
 
 // Get sample URL for an instrument
 export function getSampleUrl(instrumentId: string): string {
@@ -270,11 +276,11 @@ export function getSampleUrl(instrumentId: string): string {
 
   const samplePath = sampleMap[instrumentId];
   if (samplePath) {
-    return `/samples/${samplePath}`;
+    return `${BASE_URL}samples/${samplePath}`;
   }
   
   // Fallback to kick1
-  return '/samples/kicks/kick1.mp3';
+  return `${BASE_URL}samples/kicks/kick1.mp3`;
 }
 
 // Default pattern for testing

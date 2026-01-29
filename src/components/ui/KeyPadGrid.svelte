@@ -3,7 +3,7 @@
   import { currentPadBank, currentKit } from '../../lib/stores';
   import { playSample } from '../../lib/audio/SamplePlayer';
   import type { PadBank, PadAssignment } from '../../lib/data/types';
-  import { getDefaultKit, getPadLabels, BASS_NOTES } from '../../lib/data/presets';
+  import { getDefaultKit, getPadLabels, BASS_NOTES, getSampleUrl } from '../../lib/data/presets';
 
   // Get current pad bank index offset
   function getPadOffset(bank: PadBank): number {
@@ -65,13 +65,6 @@
         });
       }
     }
-  }
-
-  // Get sample URL from instrument ID (maps to our sample library)
-  function getSampleUrl(instrumentId: string): string {
-    // This will be populated by the sample library
-    // For now, return a placeholder path
-    return `/samples/${instrumentId}.mp3`;
   }
 
   // Get pad labels based on current bank
