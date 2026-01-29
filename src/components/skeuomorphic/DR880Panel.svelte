@@ -12,15 +12,65 @@
     currentPadBank
   } from '../../lib/stores';
   import { startSequencer, stopSequencer, resetSequencer } from '../../lib/sequencer/Sequencer';
-  import { getDefaultKit, getDefaultPattern, DRUM1_INSTRUMENTS } from '../../lib/data/presets';
+  import { getDefaultKit, getDefaultPattern, DRUM1_INSTRUMENTS, DRUM2_INSTRUMENTS, DRUM3_INSTRUMENTS, BASS_NOTES } from '../../lib/data/presets';
   import { playSample } from '../../lib/audio/SamplePlayer';
   import { getSampleUrl } from '../../lib/data/presets';
   import { onMount } from 'svelte';
+  import type { PadBank } from '../../lib/data/types';
 
   onMount(() => {
     if (!$currentKit) currentKit.set(getDefaultKit());
     if (!$currentPattern) currentPattern.set(getDefaultPattern());
   });
+
+  // Menu state
+  type MenuMode = 'default' | 'pad_select';
+  let menuMode: MenuMode = 'default';
+  let menuSelection = 0;
+
+  const PAD_MENU_OPTIONS: { label: string; value: PadBank }[] = [
+    { label: 'DRUM 1', value: 'DRUM1' },
+    { label: 'DRUM 2', value: 'DRUM2' },
+    { label: 'DRUM 3', value: 'DRUM3' },
+    { label: 'BASS', value: 'BASS' },
+  ];
+
+  // Get current bank label
+  function getBankLabel(bank: PadBank): string {
+    const opt = PAD_MENU_OPTIONS.find(o => o.value === bank);
+    return opt?.label || 'DRUM 1';
+  }
+
+  // Button handlers
+  function handlePadButton() {
+    menuMode = 'pad_select';
+    // Set selection to current bank
+    const idx = PAD_MENU_OPTIONS.findIndex(o => o.value === $currentPadBank);
+    menuSelection = idx >= 0 ? idx : 0;
+  }
+
+  function handleCursorUp() {
+    if (menuMode === 'pad_select') {
+      menuSelection = Math.max(0, menuSelection - 1);
+    }
+  }
+
+  function handleCursorDown() {
+    if (menuMode === 'pad_select') {
+      menuSelection = Math.min(PAD_MENU_OPTIONS.length - 1, menuSelection + 1);
+    }
+  }
+
+  function handleEnter() {
+    if (menuMode === 'pad_select') {
+      currentPadBank.set(PAD_MENU_OPTIONS[menuSelection].value);
+      menuMode = 'default';
+    }
+  }
+
+  function handleExit() {
+    menuMode = 'default';
+  }
 
   function handlePlay() {
     $isPlaying ? stopSequencer() : startSequencer();
@@ -43,15 +93,55 @@
     return `rotate(${(value / 100) * 270 - 135}deg)`;
   }
 
+  // Get instruments for current bank
+  function getCurrentInstruments() {
+    switch ($currentPadBank) {
+      case 'DRUM1': return DRUM1_INSTRUMENTS;
+      case 'DRUM2': return DRUM2_INSTRUMENTS.map((inst, i) => ({ ...inst, padNum: i + 1, note: '' }));
+      case 'DRUM3': return DRUM3_INSTRUMENTS.map((inst, i) => ({ ...inst, padNum: i + 1, note: '' }));
+      case 'BASS':
+      case 'BASS_LOW':
+      case 'BASS_HIGH':
+        return BASS_NOTES.map((note, i) => ({ 
+          id: 'finger_bass', 
+          name: note.name, 
+          category: 'bass', 
+          padNum: i + 1, 
+          note: note.note,
+          semitones: note.semitones 
+        }));
+      default: return DRUM1_INSTRUMENTS;
+    }
+  }
+
   // Play pad sound
   async function playPad(index: number) {
     const kit = $currentKit || getDefaultKit();
-    const pad = kit.pads[index];
-    if (pad) {
-      const url = getSampleUrl(pad.instrumentId);
-      await playSample(url, { velocity: 100, level: pad.level, pan: pad.pan, pitch: pad.pitch });
+    const instruments = getCurrentInstruments();
+    const inst = instruments[index];
+    
+    if (!inst) return;
+
+    // For bass, use pitch shifting
+    if ($currentPadBank === 'BASS' || $currentPadBank === 'BASS_LOW' || $currentPadBank === 'BASS_HIGH') {
+      const bassUrl = getSampleUrl('finger_bass');
+      const semitones = (inst as any).semitones || 0;
+      await playSample(bassUrl, { velocity: 100, level: 100, pan: 0, pitch: semitones });
+    } else {
+      // Get pad assignment from kit based on bank offset
+      let padIndex = index;
+      if ($currentPadBank === 'DRUM2') padIndex = index + 20;
+      if ($currentPadBank === 'DRUM3') padIndex = index + 40;
+      
+      const pad = kit.pads[padIndex];
+      if (pad) {
+        const url = getSampleUrl(pad.instrumentId);
+        await playSample(url, { velocity: 100, level: pad.level, pan: pad.pan, pitch: pad.pitch });
+      }
     }
   }
+
+  $: currentInstruments = getCurrentInstruments();
 </script>
 
 <!-- Wide landscape layout matching DR-880 -->
@@ -106,46 +196,77 @@
 
       <!-- Center: LCD Display -->
       <div class="flex-grow">
-        <div class="rounded" style="background: linear-gradient(180deg, #4a8a3a 0%, #3a7a2a 100%); border: 4px solid #252525; padding: 12px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);">
-          <div class="flex justify-between items-start">
-            <!-- Left: Pattern info -->
+        <div class="rounded" style="background: linear-gradient(180deg, #4a8a3a 0%, #3a7a2a 100%); border: 4px solid #252525; padding: 12px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5); min-height: 140px;">
+          
+          {#if menuMode === 'default'}
+            <!-- Default display -->
+            <div class="flex justify-between items-start">
+              <!-- Left: Pattern info -->
+              <div>
+                <div class="text-[8px] font-medium" style="color: #2a5a2a;">PATTERN PRESET</div>
+                <div class="text-5xl font-mono font-black leading-none tracking-tighter" style="color: #1a3a1a; font-family: 'Courier New', monospace; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);">
+                  {String($currentPattern?.id || '500').padStart(3, '0').slice(-3)}
+                </div>
+                <div class="flex gap-4 mt-2">
+                  <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
+                    <div class="text-[7px]" style="color: #2a5a2a;">TEMPO</div>
+                    <div class="text-2xl font-mono font-bold" style="color: #1a3a1a;">{$tempo}</div>
+                  </div>
+                  <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
+                    <div class="text-[7px]" style="color: #2a5a2a;">KEY</div>
+                    <div class="text-2xl font-mono font-bold" style="color: #1a3a1a;">Am</div>
+                  </div>
+                  <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
+                    <div class="text-[7px]" style="color: #2a5a2a;">PAD</div>
+                    <div class="text-lg font-mono font-bold" style="color: #1a3a1a;">{getBankLabel($currentPadBank)}</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Right: Branding + Drummer -->
+              <div class="text-right">
+                <div class="flex items-center justify-end gap-1 mb-0.5">
+                  <span class="text-[8px] font-black" style="background: #1a3a1a; color: #4a8a3a; padding: 1px 2px;">▌</span>
+                  <span class="text-[10px] font-black" style="color: #1a3a1a;">BOSS</span>
+                </div>
+                <div class="text-[10px] italic" style="color: #2a5a2a;">Dr.Rhythm</div>
+                <!-- Drummer icon -->
+                <div class="my-2 flex justify-end">
+                  <svg width="50" height="40" viewBox="0 0 50 40" style="fill: #1a3a1a;">
+                    <circle cx="25" cy="8" r="5"/>
+                    <rect x="20" y="14" width="10" height="12" rx="2"/>
+                    <line x1="18" y1="18" x2="10" y2="28" stroke="#1a3a1a" stroke-width="2"/>
+                    <line x1="32" y1="18" x2="40" y2="28" stroke="#1a3a1a" stroke-width="2"/>
+                    <ellipse cx="12" cy="32" rx="8" ry="4"/>
+                    <ellipse cx="38" cy="32" rx="8" ry="4"/>
+                  </svg>
+                </div>
+                <div class="text-2xl font-bold" style="color: #1a3a1a;">DR-880</div>
+              </div>
+            </div>
+
+          {:else if menuMode === 'pad_select'}
+            <!-- PAD Select Menu -->
             <div>
-              <div class="text-[8px] font-medium" style="color: #2a5a2a;">PATTERN PRESET</div>
-              <div class="text-5xl font-mono font-black leading-none tracking-tighter" style="color: #1a3a1a; font-family: 'Courier New', monospace; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);">
-                {String($currentPattern?.id || '500').padStart(3, '0').slice(-3)}
+              <div class="text-sm font-bold mb-3" style="color: #1a3a1a;">PAD SELECT</div>
+              <div class="space-y-1">
+                {#each PAD_MENU_OPTIONS as option, i}
+                  <div 
+                    class="px-3 py-1.5 rounded flex items-center gap-2"
+                    style="background: {menuSelection === i ? '#1a3a1a' : 'transparent'}; color: {menuSelection === i ? '#4a8a3a' : '#1a3a1a'};"
+                  >
+                    <span class="w-4">{menuSelection === i ? '▶' : ''}</span>
+                    <span class="font-mono font-bold">{option.label}</span>
+                    {#if option.value === $currentPadBank}
+                      <span class="text-xs ml-2">●</span>
+                    {/if}
+                  </div>
+                {/each}
               </div>
-              <div class="flex gap-4 mt-2">
-                <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
-                  <div class="text-[7px]" style="color: #2a5a2a;">TEMPO</div>
-                  <div class="text-2xl font-mono font-bold" style="color: #1a3a1a;">{$tempo}</div>
-                </div>
-                <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
-                  <div class="text-[7px]" style="color: #2a5a2a;">KEY</div>
-                  <div class="text-2xl font-mono font-bold" style="color: #1a3a1a;">Am</div>
-                </div>
+              <div class="mt-3 text-[10px]" style="color: #2a5a2a;">
+                ▲▼ Select • ENTER Confirm • EXIT Cancel
               </div>
             </div>
-            <!-- Right: Branding + Drummer -->
-            <div class="text-right">
-              <div class="flex items-center justify-end gap-1 mb-0.5">
-                <span class="text-[8px] font-black" style="background: #1a3a1a; color: #4a8a3a; padding: 1px 2px;">▌</span>
-                <span class="text-[10px] font-black" style="color: #1a3a1a;">BOSS</span>
-              </div>
-              <div class="text-[10px] italic" style="color: #2a5a2a;">Dr.Rhythm</div>
-              <!-- Drummer icon -->
-              <div class="my-2 flex justify-end">
-                <svg width="50" height="40" viewBox="0 0 50 40" style="fill: #1a3a1a;">
-                  <circle cx="25" cy="8" r="5"/>
-                  <rect x="20" y="14" width="10" height="12" rx="2"/>
-                  <line x1="18" y1="18" x2="10" y2="28" stroke="#1a3a1a" stroke-width="2"/>
-                  <line x1="32" y1="18" x2="40" y2="28" stroke="#1a3a1a" stroke-width="2"/>
-                  <ellipse cx="12" cy="32" rx="8" ry="4"/>
-                  <ellipse cx="38" cy="32" rx="8" ry="4"/>
-                </svg>
-              </div>
-              <div class="text-2xl font-bold" style="color: #1a3a1a;">DR-880</div>
-            </div>
-          </div>
+          {/if}
         </div>
       </div>
 
@@ -217,7 +338,11 @@
             <div class="flex gap-1">
               <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">SONG</button>
               <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">KIT</button>
-              <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">PAD</button>
+              <button 
+                onclick={handlePadButton}
+                class="px-2 py-1.5 text-[8px] rounded shadow transition-all"
+                style="background: {menuMode === 'pad_select' ? 'linear-gradient(180deg, #7a7a7a 0%, #5a5a5a 100%)' : 'linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%)'}; color: white;"
+              >PAD</button>
             </div>
             <div class="text-[6px] mt-0.5 flex justify-between px-1" style="color: #5a6a7a;">
               <span>DEMO PLAY</span><span>BASS PAD</span>
@@ -228,13 +353,21 @@
             <div class="text-[7px] mb-1" style="color: #5a6a7a;">CURSOR</div>
             <div class="grid grid-cols-3 gap-0.5 w-14">
               <div></div>
-              <button class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333; box-shadow: 0 2px 3px rgba(0,0,0,0.3);">▲</button>
+              <button 
+                onclick={handleCursorUp}
+                class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow active:scale-95" 
+                style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333; box-shadow: 0 2px 3px rgba(0,0,0,0.3);"
+              >▲</button>
               <div></div>
               <button class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333;">◀</button>
               <div class="w-4 h-4"></div>
               <button class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333;">▶</button>
               <div></div>
-              <button class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333;">▼</button>
+              <button 
+                onclick={handleCursorDown}
+                class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow active:scale-95" 
+                style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333;"
+              >▼</button>
               <div></div>
             </div>
           </div>
@@ -245,8 +378,16 @@
           <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">SHIFT</button>
           <button class="px-1.5 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">DISPLAY</button>
           <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">EDIT</button>
-          <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">EXIT</button>
-          <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">ENTER</button>
+          <button 
+            onclick={handleExit}
+            class="px-2 py-1.5 text-[8px] rounded shadow active:scale-95" 
+            style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;"
+          >EXIT</button>
+          <button 
+            onclick={handleEnter}
+            class="px-2 py-1.5 text-[8px] rounded shadow active:scale-95" 
+            style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;"
+          >ENTER</button>
         </div>
         <div class="text-[6px] flex justify-center gap-16" style="color: #5a6a7a;">
           <span></span><span>ERASE</span>
@@ -288,7 +429,7 @@
       <!-- RIGHT: 4x5 Pad Grid (rectangular pads) -->
       <div class="flex-grow">
         <div class="grid grid-cols-5 gap-1">
-          {#each DRUM1_INSTRUMENTS as inst, i}
+          {#each currentInstruments.slice(0, 20) as inst, i}
             <button
               class="relative overflow-hidden rounded shadow-md transition-all active:scale-95"
               style="height: 56px; background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, #3a3a3a 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);"
@@ -296,8 +437,8 @@
             >
               <!-- Top section with number and note -->
               <div class="absolute top-0 left-0 right-0 h-5 flex justify-between items-center px-1.5" style="background: rgba(0,0,0,0.3);">
-                <span class="text-[10px] font-bold" style="color: #8a8;">{inst.padNum}</span>
-                <span class="text-[10px] font-medium" style="color: #aa8;">{inst.note}</span>
+                <span class="text-[10px] font-bold" style="color: #8a8;">{inst.padNum || i + 1}</span>
+                <span class="text-[10px] font-medium" style="color: #aa8;">{inst.note || ''}</span>
               </div>
               <!-- Bottom section with name -->
               <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center pb-1 pt-5">
@@ -306,7 +447,7 @@
             </button>
           {/each}
         </div>
-        <div class="text-right text-[8px] mt-1" style="color: #5a6a7a;">BANK SELECT</div>
+        <div class="text-right text-[8px] mt-1" style="color: #5a6a7a;">BANK SELECT: {getBankLabel($currentPadBank)}</div>
       </div>
     </div>
 
