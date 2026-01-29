@@ -55,83 +55,95 @@
 </script>
 
 <!-- Wide landscape layout matching DR-880 -->
-<div class="w-full max-w-5xl mx-auto select-none">
+<div class="w-full max-w-4xl mx-auto select-none" style="font-family: Arial, Helvetica, sans-serif;">
   
-  <!-- Main Panel - Blue/Gray metallic -->
-  <div class="bg-gradient-to-b from-[#9ab4c8] via-[#8aa8bc] to-[#7a9cb0] rounded-lg shadow-2xl overflow-hidden">
+  <!-- Main Panel - Light blue/gray metallic with bevel -->
+  <div class="rounded-lg overflow-hidden" style="background: linear-gradient(180deg, #b8c8d4 0%, #a8b8c8 50%, #98a8b8 100%); box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);">
     
     <!-- Top connector strip -->
-    <div class="bg-[#6a8a9d] px-4 py-0.5 flex justify-between text-[6px] text-[#4a6a7d] font-medium tracking-wider border-b border-[#5a7a8d]">
+    <div class="px-4 py-1 flex justify-between text-[7px] tracking-wide border-b" style="background: #8898a8; color: #5a6a7a; border-color: #7888a0;">
       <span>L(MONO)</span><span>R</span><span>A-INDIVIDUAL-B</span><span>CH 1,2</span>
-      <span>CH 3,4 DIGITAL OUT</span><span>IN—MIDI—OUT</span><span>USB</span><span>POWER</span><span>AC IN</span>
+      <span>CH 3,4</span><span>DIGITAL OUT</span><span>IN—MIDI—OUT</span><span>USB</span><span>POWER</span><span>AC IN</span>
     </div>
 
     <!-- TOP DARK SECTION: Logo, Knobs, Display, Value Dial -->
-    <div class="bg-[#1a2a3a] p-4 flex items-center gap-6">
+    <div class="p-4 flex items-start gap-4" style="background: linear-gradient(180deg, #3a4a5a 0%, #2a3a4a 100%); box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3);">
       
-      <!-- Left: BOSS Logo and Model -->
-      <div class="flex-shrink-0 w-44">
-        <div class="flex items-center gap-1 mb-1">
-          <span class="bg-white text-[#1a1a1a] text-xs px-1 font-black">▌</span>
-          <span class="text-white text-2xl font-black tracking-tight" style="font-family: 'Arial Black', 'Helvetica', sans-serif;">BOSS</span>
+      <!-- Left: BOSS Logo, Model, and Knobs -->
+      <div class="flex-shrink-0" style="width: 180px;">
+        <!-- Logo -->
+        <div class="flex items-center gap-1 mb-0.5">
+          <span class="text-white text-[10px] font-black" style="background: white; color: #1a1a1a; padding: 1px 3px;">▌</span>
+          <span class="text-white text-xl font-black tracking-tight" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">BOSS</span>
         </div>
-        <div class="text-[#88bbdd] text-sm italic font-medium">Dr.Rhythm</div>
-        <div class="text-[#5588aa] text-3xl font-bold tracking-tight">DR-880</div>
+        <div class="text-sm italic mb-0.5" style="color: #7ac; font-style: italic;">Dr.Rhythm</div>
+        <div class="text-3xl font-bold tracking-tight mb-3" style="color: #6ab;">DR-880</div>
         
-        <!-- 4 Knobs -->
-        <div class="flex gap-2 mt-3">
+        <!-- 4 Knobs in a row -->
+        <div class="flex gap-3">
           {#each [
             { label: 'GUITAR/BASS\nINPUT', value: 50, store: null },
             { label: 'DRUM\nPART LEVEL', value: $drumVolume, store: drumVolume },
             { label: 'BASS\nPART LEVEL', value: $bassVolume, store: bassVolume },
             { label: 'MASTER\nVOLUME', value: $masterVolume, store: masterVolume }
-          ] as knob, i}
+          ] as knob}
             <div class="text-center">
               <div 
-                class="w-8 h-8 rounded-full bg-gradient-to-b from-[#3a3a3a] to-[#1a1a1a] border border-[#555] shadow-lg mx-auto cursor-pointer relative"
+                class="w-9 h-9 rounded-full cursor-pointer relative"
+                style="background: linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 50%, #1a1a1a 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);"
                 onwheel={(e) => knob.store && handleKnobWheel(e, knob.store)}
                 title="Scroll to adjust"
               >
-                <div class="absolute inset-0.5 rounded-full bg-gradient-to-b from-[#4a4a4a] to-[#2a2a2a] flex items-center justify-center">
-                  <div class="w-0.5 h-3 bg-white rounded-full origin-bottom" style="transform: {getKnobRotation(knob.value)}; transform-origin: center 75%;"></div>
+                <div class="absolute inset-1 rounded-full" style="background: linear-gradient(180deg, #3a3a3a 0%, #252525 100%);">
+                  <div class="w-0.5 h-3 bg-white rounded-full absolute left-1/2 top-1" style="transform: translateX(-50%) {getKnobRotation(knob.value)}; transform-origin: center 10px;"></div>
                 </div>
               </div>
-              <div class="text-[6px] text-[#6a8a9a] mt-1 whitespace-pre-line leading-tight">{knob.label}</div>
+              <div class="text-[6px] mt-1 whitespace-pre-line leading-tight text-center" style="color: #9ab;">{knob.label}</div>
             </div>
           {/each}
         </div>
       </div>
 
       <!-- Center: LCD Display -->
-      <div class="flex-grow max-w-md">
-        <div class="bg-[#5a8a4a] rounded border-4 border-[#2a2a2a] p-3 shadow-inner" style="box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);">
+      <div class="flex-grow">
+        <div class="rounded" style="background: linear-gradient(180deg, #4a8a3a 0%, #3a7a2a 100%); border: 4px solid #252525; padding: 12px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);">
           <div class="flex justify-between items-start">
             <!-- Left: Pattern info -->
             <div>
-              <div class="text-[#2a4a2a] text-[8px] font-medium">PATTERN PRESET</div>
-              <div class="text-[#1a3a1a] text-4xl font-mono font-black leading-none tracking-tighter" style="font-family: 'Courier New', monospace;">
+              <div class="text-[8px] font-medium" style="color: #2a5a2a;">PATTERN PRESET</div>
+              <div class="text-5xl font-mono font-black leading-none tracking-tighter" style="color: #1a3a1a; font-family: 'Courier New', monospace; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);">
                 {String($currentPattern?.id || '500').padStart(3, '0').slice(-3)}
               </div>
-              <div class="flex gap-6 mt-2">
-                <div>
-                  <div class="text-[#2a4a2a] text-[8px]">TEMPO</div>
-                  <div class="text-[#1a3a1a] text-xl font-mono font-bold">{$tempo}</div>
+              <div class="flex gap-4 mt-2">
+                <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
+                  <div class="text-[7px]" style="color: #2a5a2a;">TEMPO</div>
+                  <div class="text-2xl font-mono font-bold" style="color: #1a3a1a;">{$tempo}</div>
                 </div>
-                <div>
-                  <div class="text-[#2a4a2a] text-[8px]">KEY</div>
-                  <div class="text-[#1a3a1a] text-xl font-mono font-bold">Am</div>
+                <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
+                  <div class="text-[7px]" style="color: #2a5a2a;">KEY</div>
+                  <div class="text-2xl font-mono font-bold" style="color: #1a3a1a;">Am</div>
                 </div>
               </div>
             </div>
-            <!-- Right: Branding -->
+            <!-- Right: Branding + Drummer -->
             <div class="text-right">
-              <div class="text-[#2a4a2a] text-[10px] font-black">▌BOSS</div>
-              <div class="text-[#2a4a2a] text-xs italic">Dr.Rhythm</div>
-              <div class="mt-1">
-                <!-- Drummer icon placeholder -->
-                <div class="text-[#2a4a2a] text-2xl">🥁</div>
+              <div class="flex items-center justify-end gap-1 mb-0.5">
+                <span class="text-[8px] font-black" style="background: #1a3a1a; color: #4a8a3a; padding: 1px 2px;">▌</span>
+                <span class="text-[10px] font-black" style="color: #1a3a1a;">BOSS</span>
               </div>
-              <div class="text-[#1a3a1a] text-2xl font-bold mt-1">DR-880</div>
+              <div class="text-[10px] italic" style="color: #2a5a2a;">Dr.Rhythm</div>
+              <!-- Drummer icon -->
+              <div class="my-2 flex justify-end">
+                <svg width="50" height="40" viewBox="0 0 50 40" style="fill: #1a3a1a;">
+                  <circle cx="25" cy="8" r="5"/>
+                  <rect x="20" y="14" width="10" height="12" rx="2"/>
+                  <line x1="18" y1="18" x2="10" y2="28" stroke="#1a3a1a" stroke-width="2"/>
+                  <line x1="32" y1="18" x2="40" y2="28" stroke="#1a3a1a" stroke-width="2"/>
+                  <ellipse cx="12" cy="32" rx="8" ry="4"/>
+                  <ellipse cx="38" cy="32" rx="8" ry="4"/>
+                </svg>
+              </div>
+              <div class="text-2xl font-bold" style="color: #1a3a1a;">DR-880</div>
             </div>
           </div>
         </div>
@@ -140,146 +152,190 @@
       <!-- Right: Value Dial -->
       <div class="flex-shrink-0 text-center">
         <div 
-          class="w-24 h-24 rounded-full bg-gradient-to-b from-[#2a2a2a] to-[#0a0a0a] border-2 border-[#444] shadow-xl relative cursor-pointer"
+          class="w-20 h-20 rounded-full cursor-pointer relative"
+          style="background: linear-gradient(145deg, #3a3a3a 0%, #1a1a1a 50%, #0a0a0a 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.05);"
           onwheel={(e) => { e.preventDefault(); tempo.update(t => Math.max(20, Math.min(260, t + (e.deltaY > 0 ? -1 : 1)))); }}
           title="Scroll to adjust tempo"
         >
-          <div class="absolute inset-2 rounded-full bg-gradient-to-br from-[#3a3a3a] to-[#1a1a1a]">
-            <div class="absolute inset-2 rounded-full bg-gradient-to-b from-[#2a2a2a] to-[#151515] flex items-center justify-center">
-              <div class="w-1 h-6 bg-white rounded-full" style="transform: rotate(-30deg); transform-origin: center 100%;"></div>
+          <div class="absolute inset-2 rounded-full" style="background: linear-gradient(180deg, #2a2a2a 0%, #151515 100%);">
+            <div class="absolute inset-2 rounded-full flex items-center justify-center" style="background: radial-gradient(circle, #252525 0%, #1a1a1a 100%);">
+              <div class="w-1 h-8 bg-white rounded-full" style="transform: rotate(-30deg); transform-origin: center 70%;"></div>
             </div>
           </div>
         </div>
-        <div class="text-[#8ab] text-xs mt-2 font-medium">VALUE</div>
+        <div class="text-sm mt-2 font-medium" style="color: #cda;">VALUE</div>
       </div>
     </div>
 
-    <!-- MIDDLE SECTION: Buttons on LEFT, Pads on RIGHT -->
-    <div class="p-3 flex gap-4">
+    <!-- MIDDLE SECTION: Controls + Pads -->
+    <div class="p-3 flex gap-3">
       
-      <!-- LEFT: Control buttons -->
-      <div class="flex-shrink-0 w-64 space-y-2">
+      <!-- LEFT: Control buttons (compact) -->
+      <div class="flex-shrink-0 space-y-2" style="width: 240px;">
         
-        <!-- Row 1: Guitar/Bass + COSM + EZ Compose + Groove/TSC -->
-        <div class="flex gap-1 flex-wrap">
-          <div class="bg-[#7a9aaa]/50 rounded p-1">
-            <div class="text-[6px] text-[#4a6a7a] mb-0.5">GUITAR/BASS INPUT</div>
-            <div class="flex gap-0.5">
-              <button class="px-1.5 py-0.5 bg-[#cc4444] hover:bg-[#dd5555] text-white text-[8px] font-bold rounded">EFFECT</button>
-              <button class="px-1.5 py-0.5 bg-[#cc4444] hover:bg-[#dd5555] text-white text-[8px] font-bold rounded">TUNER</button>
-            </div>
-          </div>
-          <div class="bg-[#7a9aaa]/50 rounded p-1">
-            <div class="text-[6px] text-[#4a6a7a] mb-0.5">COSM</div>
-            <button class="px-1.5 py-0.5 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[8px] rounded">OUTPUT<br/>SETTING</button>
-          </div>
-        </div>
-
-        <!-- EZ Compose row -->
-        <div class="flex gap-1 items-center">
-          <div class="bg-[#7a9aaa]/50 rounded p-1 flex-grow">
-            <div class="text-[6px] text-[#4a6a7a] mb-0.5 text-center">EZ COMPOSE</div>
-            <div class="flex gap-0.5 justify-center">
-              <button class="px-1.5 py-0.5 bg-[#338833] hover:bg-[#449944] text-white text-[7px] rounded">PATTERN</button>
-              <button class="px-1.5 py-0.5 bg-[#338833] hover:bg-[#449944] text-white text-[7px] rounded">CHORD<br/>PROG</button>
-              <button class="px-1.5 py-0.5 bg-[#338833] hover:bg-[#449944] text-white text-[7px] rounded">FILL IN</button>
-            </div>
-          </div>
-          <div class="flex flex-col gap-0.5">
-            <button class="px-1.5 py-0.5 bg-[#338833] hover:bg-[#449944] text-white text-[7px] rounded">GROOVE</button>
-            <button class="px-1.5 py-1 bg-[#cc4444] hover:bg-[#dd5555] text-white text-[8px] font-bold rounded">TSC</button>
-          </div>
-        </div>
-
-        <!-- Row 2: SONG KIT PAD + Cursor -->
-        <div class="flex gap-2 items-center">
+        <!-- Row 1: Guitar/Bass Input + COSM + EZ Compose + Groove/TSC -->
+        <div class="flex gap-2 items-start">
+          <!-- Guitar/Bass Input -->
           <div>
-            <div class="text-[6px] text-[#4a6a7a] mb-0.5">PATTERN</div>
-            <div class="flex gap-0.5">
-              <button class="px-2 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[8px] rounded">SONG</button>
-              <button class="px-2 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[8px] rounded">KIT</button>
-              <button class="px-2 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[8px] rounded">PAD</button>
+            <div class="text-[7px] mb-1" style="color: #5a6a7a;">GUITAR/BASS INPUT</div>
+            <div class="flex gap-1">
+              <button class="px-2 py-1.5 text-[9px] font-bold rounded shadow" style="background: linear-gradient(180deg, #e85a5a 0%, #c84040 100%); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);">EFFECT</button>
+              <button class="px-2 py-1.5 text-[9px] font-bold rounded shadow" style="background: linear-gradient(180deg, #e85a5a 0%, #c84040 100%); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);">TUNER</button>
+            </div>
+          </div>
+          <!-- COSM -->
+          <div>
+            <div class="text-[7px] mb-1" style="color: #5a6a7a;">COSM</div>
+            <button class="px-1.5 py-1.5 text-[8px] rounded shadow leading-tight" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">OUTPUT<br/>SETTING</button>
+          </div>
+        </div>
+
+        <!-- Row 2: EZ Compose + Groove/TSC -->
+        <div class="flex gap-2 items-start">
+          <div>
+            <div class="text-[7px] mb-1 text-center" style="color: #5a6a7a;">EZ COMPOSE</div>
+            <div class="flex gap-1">
+              <button class="px-1.5 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #4a9aba 0%, #3a8aaa 100%); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">PATTERN</button>
+              <button class="px-1 py-1.5 text-[7px] rounded shadow leading-tight" style="background: linear-gradient(180deg, #4a9aba 0%, #3a8aaa 100%); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">CHORD<br/>PROG</button>
+              <button class="px-1.5 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #4a9aba 0%, #3a8aaa 100%); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">FILL IN</button>
+            </div>
+          </div>
+          <div class="space-y-1">
+            <div class="text-[7px]" style="color: #5a6a7a;">GROOVE MODIFY</div>
+            <button class="px-2 py-1 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #4a9aba 0%, #3a8aaa 100%); color: white;">GROOVE</button>
+          </div>
+          <div class="space-y-1">
+            <div class="text-[7px]" style="color: #5a6a7a;">TOTAL SOUND</div>
+            <button class="px-2 py-1.5 text-[9px] font-bold rounded shadow" style="background: linear-gradient(180deg, #e85a5a 0%, #c84040 100%); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">TSC</button>
+          </div>
+        </div>
+
+        <!-- Row 3: Pattern + Cursor -->
+        <div class="flex gap-3 items-center">
+          <div>
+            <div class="text-[7px] mb-1" style="color: #5a6a7a;">PATTERN</div>
+            <div class="flex gap-1">
+              <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">SONG</button>
+              <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">KIT</button>
+              <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">PAD</button>
+            </div>
+            <div class="text-[6px] mt-0.5 flex justify-between px-1" style="color: #5a6a7a;">
+              <span>DEMO PLAY</span><span>BASS PAD</span>
             </div>
           </div>
           <!-- Cursor diamond -->
-          <div class="text-[6px] text-[#4a6a7a]">CURSOR</div>
-          <div class="grid grid-cols-3 gap-0 w-12">
-            <div></div>
-            <button class="w-4 h-3 bg-[#d0d0d0] hover:bg-[#e0e0e0] flex items-center justify-center text-[8px] text-[#333]">▲</button>
-            <div></div>
-            <button class="w-4 h-3 bg-[#d0d0d0] hover:bg-[#e0e0e0] flex items-center justify-center text-[8px] text-[#333]">◀</button>
-            <div class="w-4 h-3"></div>
-            <button class="w-4 h-3 bg-[#d0d0d0] hover:bg-[#e0e0e0] flex items-center justify-center text-[8px] text-[#333]">▶</button>
-            <div></div>
-            <button class="w-4 h-3 bg-[#d0d0d0] hover:bg-[#e0e0e0] flex items-center justify-center text-[8px] text-[#333]">▼</button>
-            <div></div>
+          <div class="text-center">
+            <div class="text-[7px] mb-1" style="color: #5a6a7a;">CURSOR</div>
+            <div class="grid grid-cols-3 gap-0.5 w-14">
+              <div></div>
+              <button class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333; box-shadow: 0 2px 3px rgba(0,0,0,0.3);">▲</button>
+              <div></div>
+              <button class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333;">◀</button>
+              <div class="w-4 h-4"></div>
+              <button class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333;">▶</button>
+              <div></div>
+              <button class="w-4 h-4 flex items-center justify-center text-[10px] rounded-sm shadow" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333;">▼</button>
+              <div></div>
+            </div>
           </div>
         </div>
 
-        <!-- Row 3: SHIFT DISPLAY EDIT EXIT ENTER -->
-        <div class="flex gap-0.5">
-          <button class="px-1.5 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[7px] rounded">SHIFT</button>
-          <button class="px-1.5 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[7px] rounded">DISPLAY</button>
-          <button class="px-1.5 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[7px] rounded">EDIT</button>
-          <button class="px-1.5 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[7px] rounded">EXIT</button>
-          <button class="px-1.5 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[7px] rounded">ENTER</button>
+        <!-- Row 4: SHIFT DISPLAY EDIT EXIT ENTER -->
+        <div class="flex gap-1">
+          <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">SHIFT</button>
+          <button class="px-1.5 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">DISPLAY</button>
+          <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">EDIT</button>
+          <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">EXIT</button>
+          <button class="px-2 py-1.5 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">ENTER</button>
+        </div>
+        <div class="text-[6px] flex justify-center gap-16" style="color: #5a6a7a;">
+          <span></span><span>ERASE</span>
         </div>
 
-        <!-- Row 4: Transport buttons -->
+        <!-- Row 5: Transport nav + Loop/Key/Tempo -->
         <div class="flex gap-1 items-center">
-          <button class="w-6 h-6 bg-[#4a4a4a] hover:bg-[#5a5a5a] rounded flex items-center justify-center text-white text-xs">⏮</button>
-          <button class="w-6 h-6 bg-[#4a4a4a] hover:bg-[#5a5a5a] rounded flex items-center justify-center text-white text-xs">⏪</button>
-          <button class="w-6 h-6 bg-[#4a4a4a] hover:bg-[#5a5a5a] rounded flex items-center justify-center text-white text-xs">⏩</button>
-          <button class="px-2 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[7px] rounded">LOOP</button>
-          <button class="px-2 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[7px] rounded">KEY</button>
-          <button class="px-2 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[7px] rounded">TEMPO</button>
+          <button class="w-7 h-6 rounded shadow flex items-center justify-center" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">
+            <span class="text-[10px]">|◀</span>
+          </button>
+          <button class="w-7 h-6 rounded shadow flex items-center justify-center" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">
+            <span class="text-[10px]">◀◀</span>
+          </button>
+          <button class="w-7 h-6 rounded shadow flex items-center justify-center" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">
+            <span class="text-[10px]">▶▶</span>
+          </button>
+          <button class="px-2 py-1 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">LOOP</button>
+          <button class="px-2 py-1 text-[8px] rounded shadow" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">KEY</button>
+          <button class="px-1.5 py-1 text-[7px] rounded shadow leading-tight" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">TEMPO<br/><span class="text-[5px]">TAP</span></button>
         </div>
 
-        <!-- Row 5: Stop Play Rec -->
+        <!-- Row 6: Stop Play Rec -->
         <div class="flex gap-2 items-center pt-1">
-          <button onclick={handleStop} class="w-10 h-8 bg-[#3a3a3a] hover:bg-[#4a4a4a] rounded-lg shadow flex items-center justify-center">
-            <div class="w-4 h-4 bg-[#666] rounded-sm"></div>
+          <button onclick={handleStop} class="w-12 h-8 rounded-lg shadow flex items-center justify-center" style="background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);">
+            <div class="w-4 h-4 rounded-sm" style="background: #666;"></div>
           </button>
-          <button onclick={handlePlay} class="w-14 h-8 rounded-lg shadow flex items-center justify-center transition-colors {$isPlaying ? 'bg-[#55bb55]' : 'bg-[#44aa44] hover:bg-[#55bb55]'}">
-            <div class="w-0 h-0 border-l-[10px] border-l-white border-y-[6px] border-y-transparent ml-1"></div>
+          <button onclick={handlePlay} class="w-16 h-8 rounded-full shadow flex items-center justify-center transition-all" style="background: {$isPlaying ? 'linear-gradient(180deg, #6c6 0%, #4a4)' : 'linear-gradient(180deg, #5b5 0%, #393)'}; box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);">
+            <div class="w-0 h-0 ml-1" style="border-left: 12px solid white; border-top: 7px solid transparent; border-bottom: 7px solid transparent;"></div>
           </button>
-          <button class="w-10 h-8 bg-[#3a3a3a] hover:bg-[#aa3333] rounded-lg shadow flex items-center justify-center">
-            <div class="w-5 h-5 bg-[#cc3333] rounded-full border-2 border-[#aa2222]"></div>
+          <button class="w-12 h-8 rounded-lg shadow flex items-center justify-center" style="background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.4);">
+            <div class="w-5 h-5 rounded-full flex items-center justify-center" style="background: #c44; border: 2px solid #a33;">
+              <span class="text-[5px] text-white font-bold">REC</span>
+            </div>
           </button>
-          <div class="text-[6px] text-[#4a6a7a] ml-1">WRITE</div>
+          <div class="text-[7px] ml-1" style="color: #5a6a7a;">WRITE</div>
         </div>
       </div>
 
-      <!-- RIGHT: 4x5 Pad Grid -->
+      <!-- RIGHT: 4x5 Pad Grid (rectangular pads) -->
       <div class="flex-grow">
-        <div class="grid grid-cols-5 gap-1.5">
+        <div class="grid grid-cols-5 gap-1">
           {#each DRUM1_INSTRUMENTS as inst, i}
             <button
-              class="aspect-square bg-[#2a2a2a] hover:bg-[#3a3a3a] active:bg-[#4a4a4a] rounded shadow-md flex flex-col items-center justify-center p-1 transition-colors border border-[#1a1a1a]"
+              class="relative overflow-hidden rounded shadow-md transition-all active:scale-95"
+              style="height: 56px; background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, #3a3a3a 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);"
               onmousedown={() => playPad(i)}
             >
-              <div class="text-[8px] text-[#888] absolute top-0.5 left-1">{inst.padNum}</div>
-              <div class="text-[8px] text-[#888] absolute top-0.5 right-1">{inst.note}</div>
-              <span class="text-[9px] text-[#aaa] font-medium text-center leading-tight mt-2">{inst.name}</span>
+              <!-- Top section with number and note -->
+              <div class="absolute top-0 left-0 right-0 h-5 flex justify-between items-center px-1.5" style="background: rgba(0,0,0,0.3);">
+                <span class="text-[10px] font-bold" style="color: #8a8;">{inst.padNum}</span>
+                <span class="text-[10px] font-medium" style="color: #aa8;">{inst.note}</span>
+              </div>
+              <!-- Bottom section with name -->
+              <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center pb-1 pt-5">
+                <span class="text-[9px] font-medium text-center leading-tight px-0.5" style="color: #aaa;">{inst.name}</span>
+              </div>
             </button>
           {/each}
         </div>
-        <div class="text-right text-[8px] text-[#4a6a7a] mt-1">BANK SELECT</div>
+        <div class="text-right text-[8px] mt-1" style="color: #5a6a7a;">BANK SELECT</div>
       </div>
     </div>
 
     <!-- BOTTOM: Favorite buttons -->
-    <div class="bg-[#8aa8bc] px-4 py-2 flex items-center gap-2 border-t border-[#7a98ac]">
-      <div class="text-[8px] text-[#4a6a7a]">🎧 PHONES</div>
+    <div class="px-4 py-2.5 flex items-center gap-3" style="background: linear-gradient(180deg, #a8b8c8 0%, #98a8b8 100%); border-top: 1px solid #8898a8;">
+      <!-- Phones jack -->
+      <div class="flex items-center gap-1">
+        <div class="w-3 h-3 rounded-full" style="background: #333; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);"></div>
+        <span class="text-[8px] italic" style="color: #5a6a7a;">PHONES</span>
+      </div>
+      
       <div class="flex-grow"></div>
-      <div class="text-[9px] text-[#4a6a7a] italic mr-2">FAVORITE</div>
-      <button class="w-10 h-6 bg-[#d8d8d8] hover:bg-[#e8e8e8] text-[#333] text-sm font-bold rounded shadow">1</button>
-      <button class="w-10 h-6 bg-[#d8d8d8] hover:bg-[#e8e8e8] text-[#333] text-sm font-bold rounded shadow">2</button>
-      <button class="w-10 h-6 bg-[#d8d8d8] hover:bg-[#e8e8e8] text-[#333] text-sm font-bold rounded shadow">3</button>
-      <button class="w-10 h-6 bg-[#d8d8d8] hover:bg-[#e8e8e8] text-[#333] text-sm font-bold rounded shadow">4</button>
-      <button class="px-2 py-1 bg-[#4a4a4a] hover:bg-[#5a5a5a] text-white text-[8px] rounded ml-2">BANK</button>
+      
+      <span class="text-[10px] italic font-medium" style="color: #4a5a6a;">FAVORITE</span>
+      
+      <!-- Favorite buttons -->
+      {#each [1, 2, 3, 4] as num}
+        <button class="w-14 h-7 rounded shadow text-sm font-bold" style="background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%); color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.5);">{num}</button>
+      {/each}
+      
+      <button class="px-3 py-1.5 rounded shadow text-[9px] font-medium" style="background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%); color: white;">BANK</button>
+      
       <div class="flex-grow"></div>
-      <div class="text-[8px] text-[#4a6a7a]">🎸 GUITAR/BASS INPUT</div>
+      
+      <!-- Guitar input jack -->
+      <div class="flex items-center gap-1">
+        <div class="w-4 h-4 rounded-full" style="background: #333; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);"></div>
+        <span class="text-[7px]" style="color: #5a6a7a;">GUITAR/BASS<br/>INPUT</span>
+      </div>
     </div>
   </div>
 </div>
@@ -287,5 +343,8 @@
 <style>
   button {
     -webkit-tap-highlight-color: transparent;
+  }
+  button:active {
+    filter: brightness(1.1);
   }
 </style>
