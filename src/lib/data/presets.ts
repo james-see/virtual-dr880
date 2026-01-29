@@ -211,79 +211,81 @@ const BASE_URL = rawBaseUrl.endsWith('/') ? rawBaseUrl : `${rawBaseUrl}/`;
 // Get sample URL for an instrument
 export function getSampleUrl(instrumentId: string): string {
   // Map instrument IDs to their sample files
+  // Using WAV for drums (from LinnDrum, TR-909, CR-78 - Public Domain)
+  // Using MP3 for bass
   const sampleMap: Record<string, string> = {
-    // DRUM 1 - Standard kit
-    'crash1': 'cymbals/crash1.mp3',
-    'crash2': 'cymbals/crash2.mp3',
-    'china': 'cymbals/china.mp3',
-    'splash': 'cymbals/splash.mp3',
-    'ride_bell': 'cymbals/ride_bell.mp3',
-    'ride1': 'cymbals/ride1.mp3',
-    'ride2': 'cymbals/ride2.mp3',
-    'tom1': 'toms/tom1.mp3',
-    'tom2': 'toms/tom2.mp3',
-    'tom3': 'toms/tom3.mp3',
-    'tom4': 'toms/tom4.mp3',
-    'stick': 'percussion/stick.mp3',
-    'clap': 'percussion/clap.mp3',
-    'hihat_pedal': 'hihats/hihat_pedal.mp3',
-    'hihat_closed': 'hihats/hihat_closed.mp3',
-    'hihat_open': 'hihats/hihat_open.mp3',
-    'kick1': 'kicks/kick1.mp3',
-    'kick2': 'kicks/kick2.mp3',
-    'snare1': 'snares/snare1.mp3',
-    'snare2': 'snares/snare2.mp3',
+    // DRUM 1 - Standard kit (LinnDrum samples)
+    'crash1': 'cymbals/crash1.wav',
+    'crash2': 'cymbals/crash2.wav',
+    'china': 'cymbals/china.wav',
+    'splash': 'cymbals/splash.wav',
+    'ride_bell': 'cymbals/ride_bell.wav',
+    'ride1': 'cymbals/ride1.wav',
+    'ride2': 'cymbals/ride1.wav',  // Use same as ride1
+    'tom1': 'toms/tom1.wav',
+    'tom2': 'toms/tom2.wav',
+    'tom3': 'toms/tom3.wav',
+    'tom4': 'toms/tom4.wav',
+    'stick': 'percussion/stick.wav',
+    'clap': 'percussion/clap.wav',
+    'hihat_pedal': 'hihats/hihat_pedal.wav',
+    'hihat_closed': 'hihats/hihat_closed.wav',
+    'hihat_open': 'hihats/hihat_open.wav',
+    'kick1': 'kicks/kick1.wav',
+    'kick2': 'kicks/kick2.wav',
+    'snare1': 'snares/snare1.wav',
+    'snare2': 'snares/snare2.wav',
     
-    // DRUM 2 - Percussion
-    'conga_hi_slap': 'percussion/conga_hi_slap.mp3',
-    'conga_hi_open': 'percussion/conga_hi_open.mp3',
-    'conga_lo_open': 'percussion/conga_lo_open.mp3',
-    'bongo_hi': 'percussion/bongo_hi.mp3',
-    'bongo_lo': 'percussion/bongo_lo.mp3',
-    'timbale_hi': 'percussion/timbale_hi.mp3',
-    'timbale_lo': 'percussion/timbale_lo.mp3',
-    'cowbell': 'percussion/cowbell.mp3',
-    'agogo_hi': 'percussion/agogo_hi.mp3',
-    'agogo_lo': 'percussion/agogo_lo.mp3',
-    'cabasa': 'percussion/cabasa.mp3',
-    'maracas': 'percussion/maracas.mp3',
-    'shaker': 'percussion/shaker.mp3',
-    'tambourine': 'percussion/tambourine.mp3',
-    'triangle': 'percussion/triangle.mp3',
-    'woodblock_hi': 'percussion/woodblock_hi.mp3',
-    'woodblock_lo': 'percussion/woodblock_lo.mp3',
-    'claves': 'percussion/claves.mp3',
-    'guiro': 'percussion/guiro.mp3',
-    'vibraslap': 'percussion/vibraslap.mp3',
+    // DRUM 2 - Percussion (LinnDrum + CR-78)
+    'conga_hi_slap': 'percussion/conga_hi_slap.wav',
+    'conga_hi_open': 'percussion/conga_hi_open.wav',
+    'conga_lo_open': 'percussion/conga_lo_open.wav',
+    'bongo_hi': 'percussion/bongo_hi.wav',
+    'bongo_lo': 'percussion/bongo_lo.wav',
+    'timbale_hi': 'percussion/cowbell.wav',  // Use cowbell as fallback
+    'timbale_lo': 'percussion/cowbell.wav',
+    'cowbell': 'percussion/cowbell.wav',
+    'agogo_hi': 'percussion/cowbell.wav',
+    'agogo_lo': 'percussion/cowbell.wav',
+    'cabasa': 'percussion/shaker.wav',
+    'maracas': 'percussion/shaker.wav',
+    'shaker': 'percussion/shaker.wav',
+    'tambourine': 'percussion/tambourine.wav',
+    'triangle': 'percussion/stick.wav',
+    'woodblock_hi': 'percussion/stick.wav',
+    'woodblock_lo': 'percussion/stick.wav',
+    'claves': 'percussion/stick.wav',
+    'guiro': 'percussion/guiro.wav',
+    'vibraslap': 'percussion/shaker.wav',
     
-    // DRUM 3 - Electronic
-    '808_kick': 'kicks/808_kick.mp3',
-    '808_snare': 'snares/808_snare.mp3',
-    '808_clap': 'percussion/808_clap.mp3',
-    '808_hihat_c': 'hihats/808_hihat_c.mp3',
-    '808_hihat_o': 'hihats/808_hihat_o.mp3',
-    '909_kick': 'kicks/909_kick.mp3',
-    '909_snare': 'snares/909_snare.mp3',
-    '909_clap': 'percussion/909_clap.mp3',
-    '909_hihat_c': 'hihats/909_hihat_c.mp3',
-    '909_hihat_o': 'hihats/909_hihat_o.mp3',
-    'scratch1': 'percussion/scratch1.mp3',
-    'scratch2': 'percussion/scratch2.mp3',
-    'zap1': 'percussion/zap1.mp3',
-    'zap2': 'percussion/zap2.mp3',
-    'hit1': 'percussion/hit1.mp3',
-    'voice_kick': 'percussion/voice_kick.mp3',
-    'voice_snare': 'percussion/voice_snare.mp3',
-    'voice_hh': 'percussion/voice_hh.mp3',
-    'snap': 'percussion/snap.mp3',
-    'noise': 'percussion/noise.mp3',
+    // DRUM 3 - Electronic (TR-909, CR-78)
+    '808_kick': 'kicks/808_kick.wav',
+    '808_snare': 'snares/808_snare.wav',
+    '808_clap': 'percussion/808_clap.wav',
+    '808_hihat_c': 'hihats/808_hihat_c.wav',
+    '808_hihat_o': 'hihats/808_hihat_o.wav',
+    '909_kick': 'kicks/909_kick.wav',
+    '909_snare': 'snares/909_snare.wav',
+    '909_clap': 'percussion/909_clap.wav',
+    '909_hihat_c': 'hihats/909_hihat_c.wav',
+    '909_hihat_o': 'hihats/909_hihat_o.wav',
+    'scratch1': 'percussion/shaker.wav',
+    'scratch2': 'percussion/shaker.wav',
+    'zap1': 'snares/snare1.wav',
+    'zap2': 'snares/snare2.wav',
+    'hit1': 'percussion/clap.wav',
+    'voice_kick': 'kicks/kick1.wav',
+    'voice_snare': 'snares/snare1.wav',
+    'voice_hh': 'hihats/hihat_closed.wav',
+    'snap': 'percussion/clap.wav',
+    'noise': 'hihats/hihat_open.wav',
     
-    // Bass
+    // Bass (MP3 - generated)
     'finger_bass': 'bass/finger_bass.mp3',
-    'pick_bass': 'bass/pick_bass.mp3',
-    'slap_bass': 'bass/slap_bass.mp3',
-    'synth_bass': 'bass/synth_bass.mp3',
-    '808_bass': 'bass/808_bass.mp3',
+    'pick_bass': 'bass/finger_bass.mp3',
+    'slap_bass': 'bass/finger_bass.mp3',
+    'synth_bass': 'bass/finger_bass.mp3',
+    '808_bass': 'bass/finger_bass.mp3',
   };
 
   const samplePath = sampleMap[instrumentId];
@@ -292,7 +294,7 @@ export function getSampleUrl(instrumentId: string): string {
   }
   
   // Fallback to kick1
-  return `${BASE_URL}samples/kicks/kick1.mp3`;
+  return `${BASE_URL}samples/kicks/kick1.wav`;
 }
 
 // Default pattern for testing
