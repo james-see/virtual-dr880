@@ -33,28 +33,34 @@ export const BASS_NOTES: Array<{ name: string; note: string; semitones: number }
   { name: 'G', note: 'G4', semitones: 19 },
 ];
 
-// Default DRUM 1 instruments (matching DR-880 default kit layout)
+// Default DRUM 1 instruments (matching DR-880 exact layout)
+// Grid displays top-to-bottom, left-to-right
+// Row 1 (top): pads 16-20, Row 2: pads 11-15, Row 3: pads 6-10, Row 4 (bottom): pads 1-5
 export const DRUM1_INSTRUMENTS = [
-  { id: 'crash1', name: 'Crash 1', category: 'cymbal' },
-  { id: 'crash2', name: 'Crash 2', category: 'cymbal' },
-  { id: 'china', name: 'China', category: 'cymbal' },
-  { id: 'splash', name: 'Splash', category: 'cymbal' },
-  { id: 'ride_bell', name: 'Ride Bell', category: 'cymbal' },
-  { id: 'ride1', name: 'Ride 1', category: 'cymbal' },
-  { id: 'tom1', name: 'Tom 1', category: 'tom' },
-  { id: 'tom2', name: 'Tom 2', category: 'tom' },
-  { id: 'tom3', name: 'Tom 3', category: 'tom' },
-  { id: 'ride2', name: 'Ride 2', category: 'cymbal' },
-  { id: 'stick', name: 'Stick', category: 'percussion' },
-  { id: 'clap', name: 'Clap', category: 'clap' },
-  { id: 'hihat_pedal', name: 'HH Pedal', category: 'hihat' },
-  { id: 'hihat_closed', name: 'HH Closed', category: 'hihat' },
-  { id: 'hihat_open', name: 'HH Open', category: 'hihat' },
-  { id: 'kick1', name: 'Kick 1', category: 'kick' },
-  { id: 'kick2', name: 'Kick 2', category: 'kick' },
-  { id: 'snare1', name: 'Snare 1', category: 'snare' },
-  { id: 'snare2', name: 'Snare 2', category: 'snare' },
-  { id: 'tom4', name: 'Tom 4', category: 'tom' },
+  // Row 1 (top) - Pads 16-20
+  { id: 'crash1', name: 'CRASH 1', category: 'cymbal', padNum: 16, note: 'G' },
+  { id: 'crash2', name: 'CRASH 2', category: 'cymbal', padNum: 17, note: 'G#' },
+  { id: 'splash', name: 'SPLASH', category: 'cymbal', padNum: 18, note: 'A' },
+  { id: 'ride_bell', name: 'BELL', category: 'cymbal', padNum: 19, note: 'Bb' },
+  { id: 'ride1', name: 'RIDE', category: 'cymbal', padNum: 20, note: 'B' },
+  // Row 2 - Pads 11-15
+  { id: 'tom1', name: 'TOM 1', category: 'tom', padNum: 11, note: 'D' },
+  { id: 'tom2', name: 'TOM 2', category: 'tom', padNum: 12, note: 'Eb' },
+  { id: 'tom3', name: 'TOM 3', category: 'tom', padNum: 13, note: 'E' },
+  { id: 'tom4', name: 'TOM 4', category: 'tom', padNum: 14, note: 'F' },
+  { id: 'china', name: 'CHINA', category: 'cymbal', padNum: 15, note: 'F#' },
+  // Row 3 - Pads 6-10
+  { id: 'stick', name: 'CROSS STICK', category: 'percussion', padNum: 6, note: 'A' },
+  { id: 'clap', name: 'CLAP', category: 'clap', padNum: 7, note: 'Bb' },
+  { id: 'cowbell', name: 'COWBELL', category: 'percussion', padNum: 8, note: 'B' },
+  { id: 'hihat_pedal', name: 'PEDAL HH', category: 'hihat', padNum: 9, note: 'C' },
+  { id: 'hihat_open', name: 'OPEN HH', category: 'hihat', padNum: 10, note: 'C#' },
+  // Row 4 (bottom) - Pads 1-5
+  { id: 'kick1', name: 'KICK 1', category: 'kick', padNum: 1, note: 'E' },
+  { id: 'kick2', name: 'KICK 2', category: 'kick', padNum: 2, note: 'F' },
+  { id: 'snare1', name: 'SNARE 1', category: 'snare', padNum: 3, note: 'F#' },
+  { id: 'snare2', name: 'SNARE 2', category: 'snare', padNum: 4, note: 'G' },
+  { id: 'hihat_closed', name: 'CLOSED HH', category: 'hihat', padNum: 5, note: 'G#' },
 ];
 
 // Default DRUM 2 instruments (percussion)
@@ -176,10 +182,14 @@ export function getDefaultKit(): Kit {
 export function getPadLabels(
   bank: PadBank, 
   kit: Kit
-): Array<{ name: string; note?: string }> {
+): Array<{ name: string; note?: string; padNum?: number }> {
   switch (bank) {
     case 'DRUM1':
-      return DRUM1_INSTRUMENTS.map(inst => ({ name: inst.name }));
+      return DRUM1_INSTRUMENTS.map(inst => ({ 
+        name: inst.name, 
+        note: inst.note,
+        padNum: inst.padNum 
+      }));
     case 'DRUM2':
       return DRUM2_INSTRUMENTS.map(inst => ({ name: inst.name }));
     case 'DRUM3':

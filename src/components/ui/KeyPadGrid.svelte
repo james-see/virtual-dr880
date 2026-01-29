@@ -136,6 +136,7 @@
     {#each Array(20) as _, i}
       <Pad
         index={i}
+        padNum={padLabels[i]?.padNum}
         label={padLabels[i]?.name || ''}
         sublabel={padLabels[i]?.note || ''}
         color={isBass ? 'blue' : 'default'}

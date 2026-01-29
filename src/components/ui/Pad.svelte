@@ -2,10 +2,14 @@
   import { activePads } from '../../lib/stores';
 
   export let index: number = 0;
+  export let padNum: number | undefined = undefined; // DR-880 pad number (1-20)
   export let label: string = '';
   export let sublabel: string = '';
   export let color: string = 'default'; // 'default' | 'accent' | 'red' | 'blue'
   export let onTrigger: (velocity: number) => void = () => {};
+  
+  // Use padNum if provided, otherwise index+1
+  $: displayNum = padNum ?? (index + 1);
 
   let isPressed = false;
   let pressStartTime = 0;
@@ -114,17 +118,16 @@
     </span>
   {/if}
   
-  <!-- Sublabel (e.g., note name for bass) -->
+
+  <!-- Pad number and note indicator -->
+  <span class="absolute top-1 left-1 text-[8px] text-gray-400 font-medium">
+    {displayNum}
+  </span>
   {#if sublabel}
-    <span class="text-[10px] sm:text-xs text-gray-400 mt-0.5">
+    <span class="absolute top-1 right-1 text-[8px] text-gray-400">
       {sublabel}
     </span>
   {/if}
-
-  <!-- Pad number indicator -->
-  <span class="absolute top-1 left-1 text-[8px] text-gray-500">
-    {index + 1}
-  </span>
 
   <!-- Active indicator -->
   {#if isActive}
