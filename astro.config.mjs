@@ -5,7 +5,7 @@ import tailwind from '@astrojs/tailwind';
 // https://astro.build/config
 export default defineConfig({
   integrations: [svelte(), tailwind()],
-  site: 'https://yourusername.github.io',
+  site: 'https://james-see.github.io',
   base: '/virtual-dr880',
   output: 'static',
   build: {
