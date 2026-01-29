@@ -9,10 +9,12 @@
     masterVolume,
     drumVolume,
     bassVolume,
-    currentPadBank
+    currentPadBank,
+    currentPatternNumber
   } from '../../lib/stores';
   import { startSequencer, stopSequencer, resetSequencer } from '../../lib/sequencer/Sequencer';
   import { getDefaultKit, getDefaultPattern, DRUM1_INSTRUMENTS, DRUM2_INSTRUMENTS, DRUM3_INSTRUMENTS, BASS_NOTES } from '../../lib/data/presets';
+  import { getPresetPattern, getPatternName } from '../../lib/data/presetPatterns';
   import { playSample } from '../../lib/audio/SamplePlayer';
   import { getSampleUrl } from '../../lib/data/presets';
   import { onMount } from 'svelte';
@@ -20,8 +22,33 @@
 
   onMount(() => {
     if (!$currentKit) currentKit.set(getDefaultKit());
-    if (!$currentPattern) currentPattern.set(getDefaultPattern());
+    // Load preset pattern 1 on mount
+    loadPattern($currentPatternNumber);
   });
+
+  // Load a preset pattern by number (1-500)
+  function loadPattern(num: number) {
+    const pattern = getPresetPattern(num);
+    if (pattern) {
+      currentPattern.set(pattern);
+      tempo.set(pattern.tempo);
+    }
+  }
+
+  // Handle VALUE dial scroll - change pattern
+  function handleValueWheel(event: WheelEvent) {
+    event.preventDefault();
+    const delta = event.deltaY > 0 ? -1 : 1;
+    currentPatternNumber.update(n => {
+      const newNum = Math.max(1, Math.min(500, n + delta));
+      // Stop sequencer when changing patterns
+      if ($isPlaying) {
+        stopSequencer();
+      }
+      loadPattern(newNum);
+      return newNum;
+    });
+  }
 
   // Menu state
   type MenuMode = 'default' | 'pad_select';
@@ -202,36 +229,48 @@
             <!-- Default display -->
             <div class="flex justify-between items-start">
               <!-- Left: Pattern info -->
-              <div>
+              <div class="flex-grow">
                 <div class="text-[8px] font-medium" style="color: #2a5a2a;">PATTERN PRESET</div>
-                <div class="text-5xl font-mono font-black leading-none tracking-tighter" style="color: #1a3a1a; font-family: 'Courier New', monospace; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);">
-                  {String($currentPattern?.id || '500').padStart(3, '0').slice(-3)}
+                <div class="flex items-baseline gap-2">
+                  <div class="text-5xl font-mono font-black leading-none tracking-tighter" style="color: #1a3a1a; font-family: 'Courier New', monospace; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);">
+                    {String($currentPatternNumber).padStart(3, '0')}
+                  </div>
+                  <div class="text-sm font-bold truncate max-w-32" style="color: #1a3a1a;" title={getPatternName($currentPatternNumber)}>
+                    {getPatternName($currentPatternNumber)}
+                  </div>
                 </div>
-                <div class="flex gap-4 mt-2">
+                <div class="flex gap-3 mt-2">
                   <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
                     <div class="text-[7px]" style="color: #2a5a2a;">TEMPO</div>
-                    <div class="text-2xl font-mono font-bold" style="color: #1a3a1a;">{$tempo}</div>
+                    <div class="text-xl font-mono font-bold" style="color: #1a3a1a;">{$tempo}</div>
                   </div>
                   <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
                     <div class="text-[7px]" style="color: #2a5a2a;">KEY</div>
-                    <div class="text-2xl font-mono font-bold" style="color: #1a3a1a;">Am</div>
+                    <div class="text-xl font-mono font-bold" style="color: #1a3a1a;">{$currentPattern?.key || 'C'}</div>
                   </div>
                   <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
                     <div class="text-[7px]" style="color: #2a5a2a;">PAD</div>
-                    <div class="text-lg font-mono font-bold" style="color: #1a3a1a;">{getBankLabel($currentPadBank)}</div>
+                    <div class="text-sm font-mono font-bold" style="color: #1a3a1a;">{getBankLabel($currentPadBank)}</div>
+                  </div>
+                  <div class="px-2 py-1 rounded" style="background: rgba(0,0,0,0.15);">
+                    <div class="text-[7px]" style="color: #2a5a2a;">POS</div>
+                    <div class="text-sm font-mono font-bold" style="color: #1a3a1a;">{$currentMeasure}:{$currentBeat}</div>
                   </div>
                 </div>
+                {#if $isPlaying}
+                  <div class="mt-2 text-sm font-bold animate-pulse" style="color: #1a3a1a;">▶ PLAYING</div>
+                {/if}
               </div>
               <!-- Right: Branding + Drummer -->
-              <div class="text-right">
+              <div class="text-right flex-shrink-0">
                 <div class="flex items-center justify-end gap-1 mb-0.5">
                   <span class="text-[8px] font-black" style="background: #1a3a1a; color: #4a8a3a; padding: 1px 2px;">▌</span>
                   <span class="text-[10px] font-black" style="color: #1a3a1a;">BOSS</span>
                 </div>
                 <div class="text-[10px] italic" style="color: #2a5a2a;">Dr.Rhythm</div>
                 <!-- Drummer icon -->
-                <div class="my-2 flex justify-end">
-                  <svg width="50" height="40" viewBox="0 0 50 40" style="fill: #1a3a1a;">
+                <div class="my-1 flex justify-end">
+                  <svg width="40" height="32" viewBox="0 0 50 40" style="fill: #1a3a1a;">
                     <circle cx="25" cy="8" r="5"/>
                     <rect x="20" y="14" width="10" height="12" rx="2"/>
                     <line x1="18" y1="18" x2="10" y2="28" stroke="#1a3a1a" stroke-width="2"/>
@@ -240,7 +279,7 @@
                     <ellipse cx="38" cy="32" rx="8" ry="4"/>
                   </svg>
                 </div>
-                <div class="text-2xl font-bold" style="color: #1a3a1a;">DR-880</div>
+                <div class="text-lg font-bold" style="color: #1a3a1a;">DR-880</div>
               </div>
             </div>
 
@@ -275,12 +314,12 @@
         <div 
           class="w-20 h-20 rounded-full cursor-pointer relative"
           style="background: linear-gradient(145deg, #3a3a3a 0%, #1a1a1a 50%, #0a0a0a 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.05);"
-          onwheel={(e) => { e.preventDefault(); tempo.update(t => Math.max(20, Math.min(260, t + (e.deltaY > 0 ? -1 : 1)))); }}
-          title="Scroll to adjust tempo"
+          onwheel={handleValueWheel}
+          title="Scroll to change pattern (1-500)"
         >
           <div class="absolute inset-2 rounded-full" style="background: linear-gradient(180deg, #2a2a2a 0%, #151515 100%);">
             <div class="absolute inset-2 rounded-full flex items-center justify-center" style="background: radial-gradient(circle, #252525 0%, #1a1a1a 100%);">
-              <div class="w-1 h-8 bg-white rounded-full" style="transform: rotate(-30deg); transform-origin: center 70%;"></div>
+              <div class="w-1 h-8 bg-white rounded-full" style="transform: rotate({($currentPatternNumber / 500) * 270 - 135}deg); transform-origin: center 70%;"></div>
             </div>
           </div>
         </div>

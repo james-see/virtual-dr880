@@ -10,6 +10,9 @@ export const currentPadBank = writable<PadBank>('DRUM1');
 // Current kit
 export const currentKit = writable<Kit | null>(null);
 
+// Current pattern number (1-500 for presets)
+export const currentPatternNumber = writable(1);
+
 // Current pattern
 export const currentPattern = writable<Pattern | null>(null);
 
