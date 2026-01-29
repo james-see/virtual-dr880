@@ -194,7 +194,9 @@ export function getPadLabels(
 }
 
 // Base URL for samples (handles GitHub Pages subpath)
-const BASE_URL = import.meta.env.BASE_URL || '/';
+// Ensure BASE_URL has trailing slash
+const rawBaseUrl = import.meta.env.BASE_URL || '/';
+const BASE_URL = rawBaseUrl.endsWith('/') ? rawBaseUrl : `${rawBaseUrl}/`;
 
 // Get sample URL for an instrument
 export function getSampleUrl(instrumentId: string): string {
